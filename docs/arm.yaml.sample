@@ -66,6 +66,9 @@ LOGLEVEL: "INFO"
 # How long to let log files live before deleting (in days)
 LOGLIFE: 1
 
+# Set to true if you prefer a single log file for all activity versus a separate log per disc.
+LOG_SINGLE_FILE=false 
+
 ########################
 ##  File Permissions  ##
 ########################
@@ -178,10 +181,17 @@ EMBY_API_KEY: ""
 #############################
 
 # Notify after Rip?
+<<<<<<< HEAD:docs/arm.yaml.sample
 NOTIFY_RIP: true
 
 # Notify after transcode?
 NOTIFY_TRANSCODE: true
+=======
+NOTIFY_RIP=true
+
+# Notify after transcode?
+NOTIFY_TRANSCODE=true
+>>>>>>> b5f34ad3c8fde443a4e62ffd16c8be7b17bf855f:config.sample
 
 # Pushbullet API Key
 # Leave empty to disable Pushbullet notifications
@@ -204,5 +214,16 @@ PO_APP_KEY: ""
 # See README-OMDBAPI for background and info
 # This is the API key for omdbapi.com queries.
 # More info at http://omdbapi.com/
+<<<<<<< HEAD:docs/arm.yaml.sample
 OMDB_API_KEY: ""
+=======
+OMDB_API_KEY=""
+
+# Flag to set for EMail Notification 
+# Leave empty or comment out to disable email notifications
+# This system uses MUTT to send the emails.  A guide for installing and
+# configuraing mutt can be found here:
+# https://www.garron.me/en/go2linux/send-mail-gmail-mutt.html
+# EMAIL_NOTIFY="user@email.com"
+>>>>>>> b5f34ad3c8fde443a4e62ffd16c8be7b17bf855f:config.sample
 

@@ -9,9 +9,13 @@ temp/
 test.py
 *.sh~
 Branch_Scope_Sanatization.txt
+<<<<<<< HEAD
 __pycache*
 removed/*
 arm.conf
 *.pyc
 .gitignore
 arm.yaml
+=======
+.vscode/settings.json
+>>>>>>> b5f34ad3c8fde443a4e62ffd16c8be7b17bf855f
