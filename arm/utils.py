@@ -2,6 +2,7 @@
 
 import os
 import sys
+import time
 import logging
 import fcntl
 import subprocess
@@ -106,28 +107,30 @@ def move_files(basepath, filename, hasnicetitle, videotitle, ismainfeature=False
     else:
         logging.info("hasnicetitle is false.  Not moving files.")
 
-
 def make_dir(path):
     """
-Make a directory
-    path = Path to directory
+    Creates a new directory. If the directory already exists, create a directory
+    including the timestamp of creation time at the end of the directory name
 
-    returns success True if successful
-        false if the directory already exists
+    Input value:
+    path: A string representing the path to the desired directory.
+
+    Return value: Path to the output directory
     """
-    if not os.path.exists(path):
-        logging.debug("Creating directory: " + path)
-        try:
-            os.makedirs(path)
-            return True
-        except OSError:
-            err = "Couldn't create a directory at path: " + path + " Probably a permissions error.  Exiting"
-            logging.error(err)
-            sys.exit(err)
-            # return False
-    else:
-        return False
+    if os.path.exists(path):
+        ts = round(time.time() * 100)
+        path = os.path.join(path + "_" + str(ts))
 
+    logging.debug("Creating directory: " + path)
+
+    try:
+        os.makedirs(path)
+    except OSError:
+        err = "Couldn't create a directory at path: " + path + " Probably a permissions error.  Exiting"
+        logging.error(err)
+        sys.exit(error)
+
+    return path
 
 def get_cdrom_status(devpath):
     """get the status of the cdrom drive

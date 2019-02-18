@@ -89,18 +89,18 @@ def clean_for_filename(string):
     string = string.replace(' : ', ' - ')
     string = string.replace(': ', ' - ')
     string = string.strip()
-    return re.sub('[^\w\-_\.\(\) ]', '', string)
-
-# pylint: disable=C0103
+    string = string.replace('/', ' & ')
+    string = string.replace('\\', ' & ')
+    return re.sub('[^\w\-_\.\(\)& ]', '', string)
 
 
 def main(disc):
-    # args = entry()
 
     disc.hasnicetitle = False
     try:
         disc_title, disc_year = getdvdtitle(disc)
         if disc_title:
+            logging.debug("getmovietitle dvd title before cleaning: " + disc_title)
             disc_title = clean_for_filename(disc_title)
             logging.info("getmovietitle dvd title found: " + disc_title + " : " + disc_year)
         else:

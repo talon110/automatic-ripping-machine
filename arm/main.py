@@ -4,20 +4,15 @@ import sys
 import argparse
 import os
 import logging
-import time
 import datetime
-import shutil
-import pyudev
 import logger
 import utils
-import makemkv
-import handbrake
 import identify
-import ripper
 
 from config import cfg
 from classes import Disc
 from getkeys import grabkeys
+from ripper import Ripper
 
 
 def entry():
@@ -35,6 +30,10 @@ def main(disc, logfile):
 
     identify.identify(disc, logfile)
 
+    # Move logging to a disc-specific log file and rename the old file
+    logfile = logger.disclogging(disc, logfile)
+    logging.info("Log file: " + logfile)
+
     log_arm_params(disc)
 
     if cfg['HASHEDKEYS']:
@@ -42,7 +41,6 @@ def main(disc, logfile):
         grabkeys()
 
     ripper = Ripper(disc, logfile)
-    #rip(disc, logfile)
     logging.info("ARM processing complete")
 
 
@@ -104,10 +102,6 @@ if __name__ == "__main__":
 
     disc = Disc(devpath)
     logging.info("Disc label: " + disc.label)
-
-    # Move logging to a disc-specific log file and rename the old file
-    logfile = logger.disclogging(disc, logfile)
-    logging.info("Log file: " + logfile)
 
     if utils.get_cdrom_status(devpath) != 4:
         logging.info("Drive appears to be empty or is not ready.  Exiting ARM.")
