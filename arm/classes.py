@@ -1,5 +1,6 @@
 import pyudev
 import os
+import logging
 
 
 class Disc(object):
@@ -38,10 +39,13 @@ class Disc(object):
         """Parse udev for properties of current disc"""
 
         # print("Entering disc")
+        logging.debug("**** Logging udev attributes ****")
         context = pyudev.Context()
         device = pyudev.Devices.from_device_file(context, self.devpath)
         self.disctype = "unknown"
+
         for key, value in device.items():
+            logging.debug(key + ":" + value)
             if key == "ID_FS_LABEL":
                 self.label = value
                 if value == "iso9660":
@@ -54,6 +58,7 @@ class Disc(object):
                 self.disctype = "music"
             else:
                 pass
+        logging.debug("**** End udev attributes ****")
 
     def __str__(self):
         """Returns a string of the object"""

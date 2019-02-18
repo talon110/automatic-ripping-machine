@@ -3,30 +3,19 @@
 import os
 import logging
 import time
-# import yaml
 
 from config import cfg
 
-
-def setuplogging(disc):
-    """Setup logging and return the path to the logfile for
-    redirection of external calls"""
+def logger(logname):
+    """Basic logging function"""
 
     if not os.path.exists(cfg['LOGPATH']):
         os.makedirs(cfg['LOGPATH'])
 
-    if disc.label == "":
-        if disc.disctype == "music":
-            logfile = "music_cd.log"
-        else:
-            logfile = "empty.log"
-    else:
-        logfile = disc.label + ".log"
-
     if cfg["LOGPATH"][-1:] == "/":
-        logfull = cfg["LOGPATH"] + logfile
+        logfull = cfg["LOGPATH"] + logname
     else:
-        logfull = cfg["LOGPATH"] + "/" + logfile
+        logfull = cfg["LOGPATH"] + "/" + logname
 
     if cfg["LOGLEVEL"] == "DEBUG":
         logging.basicConfig(filename=logfull, format='[%(asctime)s] %(levelname)s ARM: %(module)s.%(funcName)s %(message)s',
@@ -34,8 +23,28 @@ def setuplogging(disc):
     else:
         logging.basicConfig(filename=logfull, format='[%(asctime)s] %(levelname)s ARM: %(message)s',
                             datefmt='%Y-%m-%d %H:%M:%S', level=cfg["LOGLEVEL"])
-
     return logfull
+
+def disclogging(disc, oldlog):
+    """Direct logging to a disc-specific file and return the path to the logfile
+    for redirection of external calls"""
+
+    if disc.label == "":
+        if disc.disctype == "music":
+            logname = "music_cd.log"
+        if disc.disctype == "dvd":
+            logname = "dvd.log"
+        if disc.disctype == "bluray":
+            logname = "bluray.log"
+        else:
+            logname = "empty.log"
+    else:
+        logname = disc.label + ".log"
+
+    newlog = logger(logname)
+    os.rename(oldlog, logfull)
+
+    return newlog
 
 
 def cleanuplogs(logpath, loglife):

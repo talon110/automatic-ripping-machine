@@ -14,7 +14,7 @@ from config import cfg
 def identify(disc, logfile):
     """Identify disc attributes"""
 
-    logging.debug("Identification starting: " + str(disc))
+    logging.info("Starting disc dentification: " + str(disc))
 
     # If UDF CHeck is on
     # if cfg['ARM_CHECK_UDF']:
@@ -61,7 +61,7 @@ def identify(disc, logfile):
                 logging.info("Getting video type...")
                 disc.videotype, disc.videoyear = getvideotype.main(disc)
             else:
-                logging.info("Disc does not have a nice title.  Skipping video type identification and setting title=title_unkonwn")
+                logging.info("Disc does not have a nice title.  Skipping video type identification and setting title to title_unknown")
                 disc.videotitle = "title_unknown"
 
             if not cfg['VIDEOTYPE'].lower() == "auto":
