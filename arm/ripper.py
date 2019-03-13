@@ -37,7 +37,7 @@ class Ripper(object):
         if disc.disctype=="bluray":
             dest_dir = self.create_output_dirs(disc)
             logging.info("Processing files to: " + dest_dir)
-            self.rip_and_transcode(disc, logfile, destdir)
+            self.rip_and_transcode(disc, logfile, dest_dir)
             self.set_permissions(dest_dir)
         elif disc.disctype=="dvd":
             dest_dir = self.create_output_dirs(disc)
@@ -53,7 +53,7 @@ class Ripper(object):
         elif disc.disctype=="data":
             dest_dir = self.create_output_dirs(disc)
             logging.info("Processing files to: " + dest_dir)
-            if rip_data(disc, dest_dir, logfile):
+            if self.rip_data(disc, dest_dir, logfile):
                 utils.notify("ARM notification", "Data disc: " + disc.label + " copying complete.")
                 disc.eject()
                 self.set_permissions(dest_dir)
