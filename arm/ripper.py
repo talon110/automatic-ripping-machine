@@ -50,7 +50,7 @@ class Ripper(object):
                 utils.scan_emby()
             else:
                 logging.info("Music rip failed.  See previous errors.  Exiting.")
-        elif disc.distype=="data":
+        elif disc.disctype=="data":
             dest_dir = self.create_output_dirs(disc)
             logging.info("Processing files to: " + dest_dir)
             if rip_data(disc, dest_dir, logfile):
