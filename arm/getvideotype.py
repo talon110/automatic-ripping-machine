@@ -84,7 +84,7 @@ def callwebservice(omdb_api_key, dvd_title, year=""):
             return "fail", None
         else:
             media_type = doc['Type']
-            year = doc['Year']
+            year = re.sub(r'[^\x00-\x7f]',r'', doc['Year'])
             logging.debug("Webservice successful.  Document returned is: " + json.dumps(doc))
             return (media_type, year)
 

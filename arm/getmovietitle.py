@@ -101,7 +101,9 @@ def main(disc):
         disc_title, disc_year = getdvdtitle(disc)
         if disc_title:
             logging.debug("getmovietitle dvd title before cleaning: " + disc_title)
+            logging.debug("getmovietitle dvd year before cleaning: " + disc_year)
             disc_title = clean_for_filename(disc_title)
+            disc_year = clean_for_filename(disc_year)
             logging.info("getmovietitle dvd title found: " + disc_title + " : " + disc_year)
         else:
             logging.warning("DVD title not found")
@@ -110,7 +112,10 @@ def main(disc):
     except Exception:
         disc_title, disc_year = getbluraytitle(disc)
         if disc_title:
+            logging.debug("getmovietitle dvd title before cleaning: " + disc_title)
+            logging.debug("getmovietitle dvd year before cleaning: " + disc_year)
             disc_title = clean_for_filename(disc_title)
+            disc_year = clean_for_filename(disc_year)
             logging.info("getmovietitle bluray title found: " + disc_title + " : " + disc_year)
             disc.hasnicetitle = True
         return(disc_title, disc_year)
