@@ -154,9 +154,9 @@ class Ripper(object):
             if cfg['NOTIFY_RIP']:
                 utils.notify("ARM notification", str(disc.videotitle + " rip complete."))
         else:
-	       logging.debug(str(disc.videotitle + " rip complete. Starting transcode.")
-	       if cfg['NOTIFY_RIP']:
-		      utils.notify("ARM notification", str(disc.videotitle + " rip complete.  Starting transcode."))
+            logging.debug(str(disc.videotitle + " rip complete. Starting transcode.")
+            if cfg['NOTIFY_RIP']:
+                utils.notify("ARM notification", str(disc.videotitle + " rip complete.  Starting transcode."))
 
         return mkvoutpath
 
