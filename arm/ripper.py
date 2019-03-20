@@ -94,7 +94,7 @@ class Ripper(object):
             logging.info("SKIP_TRANSCODE is true.")
             self.move_raw(mkvoutpath, dest_dir)
             self.set_permissions(dest_dir)
-        elif disc.disctype=="dvd"
+        elif disc.disctype == "dvd":
             logging.info("RIPMETHOD is backup.")
             handbrake.handbrake_mkv(mkvoutpath, dest_dir, logfile, disc)
         else:
