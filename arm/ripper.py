@@ -94,8 +94,11 @@ class Ripper(object):
             logging.info("SKIP_TRANSCODE is true.")
             self.move_raw(mkvoutpath, dest_dir)
             self.set_permissions(dest_dir)
-        else:
+        elif disc.disctype=="dvd"
+            logging.info("RIPMETHOD is backup.")
             handbrake.handbrake_mkv(mkvoutpath, dest_dir, logfile, disc)
+        else:
+            handbrake.handbrake_all(mkvoutpath, dest_dir, logfile, disc)
 
         # report errors if any
         if disc.errors:
@@ -147,13 +150,13 @@ class Ripper(object):
             sys.exit()
 
         if cfg['SKIP_TRANSCODE']:
-	    logging.debug(str(disc.videotitle + " rip complete.")
- 	    if cfg['NOTIFY_RIP']:
+            logging.debug(str(disc.videotitle + " rip complete.")
+            if cfg['NOTIFY_RIP']:
                 utils.notify("ARM notification", str(disc.videotitle + " rip complete."))
         else:
-	    logging.debug(str(disc.videotitle + " rip complete. Starting transcode.")
-	    if cfg['NOTIFY_RIP']:            
-		utils.notify("ARM notification", str(disc.videotitle + " rip complete.  Starting transcode."))
+	       logging.debug(str(disc.videotitle + " rip complete. Starting transcode.")
+	       if cfg['NOTIFY_RIP']:
+		      utils.notify("ARM notification", str(disc.videotitle + " rip complete.  Starting transcode."))
 
         return mkvoutpath
 
