@@ -146,11 +146,14 @@ class Ripper(object):
             logging.error("MakeMKV did not complete successfully.  Exiting ARM!")
             sys.exit()
 
-        if cfg['NOTIFY_RIP']:
-            if cfg['SKIP_TRANSCODE']:
+        if cfg['SKIP_TRANSCODE']:
+	    logging.debug(str(disc.videotitle + " rip complete.")
+ 	    if cfg['NOTIFY_RIP']:
                 utils.notify("ARM notification", str(disc.videotitle + " rip complete."))
-            else:
-                utils.notify("ARM notification", str(disc.videotitle + " rip complete.  Starting transcode."))
+        else:
+	    logging.debug(str(disc.videotitle + " rip complete. Starting transcode.")
+	    if cfg['NOTIFY_RIP']:            
+		utils.notify("ARM notification", str(disc.videotitle + " rip complete.  Starting transcode."))
 
         return mkvoutpath
 

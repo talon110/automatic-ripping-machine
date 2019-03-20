@@ -12,11 +12,11 @@ from config import cfg
 
 
 def handbrake_mainfeature(srcpath, basepath, logfile, disc):
-    """process dvd with mainfeature enabled.\n
-    srcpath = Path to source for HB (dvd or files)\n
-    basepath = Path where HB will save trancoded files\n
-    logfile = Logfile for HB to redirect output to\n
-    disc = Disc object\n
+    """process dvd with mainfeature enabled.
+    srcpath = Path to source for HB (dvd or files)
+    basepath = Path where HB will save trancoded files
+    logfile = Logfile for HB to redirect output to
+    disc = Disc object
 
     Returns nothing
     """
@@ -68,11 +68,11 @@ def handbrake_mainfeature(srcpath, basepath, logfile, disc):
 
 
 def handbrake_all(srcpath, basepath, logfile, disc):
-    """Process all titles on the dvd\n
-    srcpath = Path to source for HB (dvd or files)\n
-    basepath = Path where HB will save trancoded files\n
-    logfile = Logfile for HB to redirect output to\n
-    disc = Disc object\n
+    """Process all titles on the dvd
+    srcpath = Path to source for HB (dvd or files)
+    basepath = Path where HB will save trancoded files
+    logfile = Logfile for HB to redirect output to
+    disc = Disc object
 
     Returns nothing
     """
@@ -202,11 +202,11 @@ def handbrake_all(srcpath, basepath, logfile, disc):
 
 
 def handbrake_mkv(srcpath, basepath, logfile, disc):
-    """process all mkv files in a directory.\n
-    srcpath = Path to source for HB (dvd or files)\n
-    basepath = Path where HB will save trancoded files\n
-    logfile = Logfile for HB to redirect output to\n
-    disc = Disc object\n
+    """process all mkv files in a directory.
+    srcpath = Path to source for HB (dvd or files)
+    basepath = Path where HB will save trancoded files
+    logfile = Logfile for HB to redirect output to
+    disc = Disc object
 
     Returns nothing
     """
@@ -253,9 +253,9 @@ def handbrake_mkv(srcpath, basepath, logfile, disc):
 
 
 def get_title_length(title, srcpath):
-    """Use HandBrake to get the title length\n
-    title = title to scan\n
-    srcpath = location of the dvd or decrypted bluray\n
+    """Use HandBrake to get the title length
+    title = title to scan
+    srcpath = location of the dvd or decrypted bluray
 
     returns the length of the title or -1 if the length could not be determinied
     """
