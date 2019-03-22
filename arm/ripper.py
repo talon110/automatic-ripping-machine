@@ -39,7 +39,7 @@ class Ripper(object):
             dest_dir = self.create_output_dirs(disc)
             logging.info("Processing files to: " + dest_dir)
 
-            if disc.disctype=="bluray" || disc.disctype=="dvd" && not cfg['MAINFEATURE']:
+            if disc.disctype=="bluray" or disc.disctype=="dvd" && not cfg['MAINFEATURE']:
                 self.rip_and_transcode(disc, logfile, dest_dir)
             elif disc.disctype=="dvd" && cfg['MAINFEATURE']:
                 self.rip_dvd(disc, logfile, dest_dir)
