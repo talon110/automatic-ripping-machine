@@ -41,7 +41,7 @@ class Ripper(object):
 
             if disc.disctype=="bluray" or disc.disctype=="dvd" && not cfg['MAINFEATURE']:
                 self.rip_and_transcode(disc, logfile, dest_dir)
-            elif disc.disctype=="dvd" && cfg['MAINFEATURE']:
+            elif disc.disctype=="dvd" and cfg['MAINFEATURE']:
                 self.rip_dvd(disc, logfile, dest_dir)
             elif disc.disctype=="data":
                 self.rip_data(disc, dest_dir, logfile)
