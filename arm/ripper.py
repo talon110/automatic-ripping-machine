@@ -10,56 +10,43 @@ from config import cfg
 
 
 class Ripper(object):
-
-    """Class Ripper is an object that takes in a disc and logfile
+    """
+    Class Ripper is an object that takes in a disc and logfile
     and rips the disc using the appropriate programs.
 
     Attributes:
 
     Methods:
-        __init__(self, disc, logfile)
+        __init__(disc, logfile)
         disc_notify(disc)
-        create_dirs(disc)
-        rip_and_transcode(disc, logfile, dest_dir)
         rip_dvd(disc, logfile, dest_dir)
+        rip_and_transcode(disc, logfile, dest_dir)
+        create_output_dirs(disc)
         makemkv_rip(disc, logfile)
         move_raw(mkvoutpath, dest_dir)
         delete_raw(mkvoutpath)
         rip_music(disc, logfile)
         rip_data(disc, datapath, logfile)
         set_permissions(dest_dir)
-
     """
 
     def __init__(self, disc, logfile=""):
         self.disc_notify(disc)
 
-        if disc.disctype=="bluray":
-            dest_dir = self.create_output_dirs(disc)
-            logging.info("Processing files to: " + dest_dir)
-            self.rip_and_transcode(disc, logfile, dest_dir)
-            self.set_permissions(dest_dir)
-        elif disc.disctype=="dvd":
-            dest_dir = self.create_output_dirs(disc)
-            logging.info("Processing files to: " + dest_dir)
-            self.rip_dvd(disc, logfile, dest_dir)
-            self.set_permissions(dest_dir)
-        elif disc.disctype=="music":
-            if rip_music(disc, logfile):
-                utils.notify("ARM notification", "Music CD: " + disc.label + " processing complete.")
-                utils.scan_emby()
+        if disc.disctype=="music":
+            rip_music(disc, logfile):
             else:
-                logging.info("Music rip failed.  See previous errors.  Exiting.")
-        elif disc.disctype=="data":
+        elif disc.disctype in ["bluray", "dvd", "data"]:
             dest_dir = self.create_output_dirs(disc)
             logging.info("Processing files to: " + dest_dir)
-            if self.rip_data(disc, dest_dir, logfile):
-                utils.notify("ARM notification", "Data disc: " + disc.label + " copying complete.")
-                disc.eject()
-                self.set_permissions(dest_dir)
-            else:
-                logging.info("Data rip failed.  See previous errors.  Exiting.")
-                disc.eject()
+
+            if disc.disctype=="bluray" || disc.disctype=="dvd" && not cfg['MAINFEATURE']:
+                self.rip_and_transcode(disc, logfile, dest_dir)
+            elif disc.disctype=="dvd" && cfg['MAINFEATURE']:
+                self.rip_dvd(disc, logfile, dest_dir)
+            elif disc.disctype=="data":
+                self.rip_data(disc, dest_dir, logfile)
+            self.set_permissions(dest_dir)
         else:
             logging.info("Couldn't identify the disc type. Exiting without any action.")
 
@@ -68,6 +55,9 @@ class Ripper(object):
     def disc_notify(self, disc):
         """
         Send job start notifications using IFTTT
+
+        Parameters:
+        disc: disc object
 
         Return value: None
         """
@@ -82,14 +72,36 @@ class Ripper(object):
             utils.notify("ARM Notification", "Could not identify disc.  Exiting.")
             sys.exit()
 
+    def rip_dvd(self, disc, logfile, dest_dir):
+        """
+        Rips and transcodes DVDs; uses Handbrake for mainfeature only, or
+        MakeMKV for full disc
+
+        Parameters:
+        disc: disc object
+        logfile: path of intended logfile
+        dest_dir: path to directory of final video files
+
+        Return value: None
+        """
+        hbinpath = str(disc.devpath)
+        handbrake.handbrake_mainfeature(hbinpath, dest_dir, logfile, disc)
+        disc.eject()
+
     def rip_and_transcode(self, disc, logfile, dest_dir):
         """
         Rips and transcodes video discs
+
+        Parameters:
+        disc: disc object
+        logfile: path of intended logfile
+        dest_dir: path to directory of final video files
 
         Return value: None
         """
 
         mkvoutpath = self.makemkv_rip(disc, logfile)
+        disc.eject()
         if cfg['RIPMETHOD'] == "mkv" and cfg['SKIP_TRANSCODE']:
             logging.info("SKIP_TRANSCODE is true.")
             self.move_raw(mkvoutpath, dest_dir)
@@ -115,22 +127,16 @@ class Ripper(object):
         if cfg['DELRAWFILES']:
             self.delete_raw(mkvoutpath)
 
-    def rip_dvd(self, disc, logfile, dest_dir):
-        """
-        Rips and transcodes DVDs; uses Handbrake for mainfeature only, or
-        MakeMKV for full disc
-
-        Return value: None
-        """
-
-        if cfg['MAINFEATURE']:
-            hbinpath = str(disc.devpath)
-            handbrake.handbrake_mainfeature(hbinpath, dest_dir, logfile, disc)
-            disc.eject()
-        else:
-            self.rip_and_transcode(disc, logfile, dest_dir)
-
     def create_output_dirs(self, disc):
+        """
+        Creates output directories necessary for rips
+
+        Parameters:
+        disc: disc object
+
+        Return value: created output directory
+        """
+
         if disc.disctype in ["dvd", "bluray"]:
             output_dir = utils.make_dir(os.path.join(cfg['MEDIA_DIR'], disc.videotitle + " (" + disc.videoyear + ")"))
         elif disc.disctype == "data":
@@ -140,6 +146,10 @@ class Ripper(object):
     def makemkv_rip(self, disc, logfile):
         """
         Run MakeMKV and return the output path to the files generated
+
+        Parameters:
+        disc: disc object
+        logfile: path to intended logfile
 
         Return value: path to the directory containing the ripped files
         """
@@ -161,6 +171,16 @@ class Ripper(object):
         return mkvoutpath
 
     def move_raw(self, mkvoutpath, dest_dir):
+        """
+        Moves raw mkv files to dest_dir
+
+        Parameters:
+        mkvoutpath: path to raw ripped mkv files
+        dest_dir: path to destination directory
+
+        Return value: None
+        """
+
         logging.info("Moving raw mkv files. NOTE: Identified main feature may not be actual main feature")
         files = os.listdir(mkvoutpath)
         if disc.videotype == "movie":
@@ -213,6 +233,15 @@ class Ripper(object):
                 shutil.move(mkvoutfile, dest_dir)
 
     def delete_raw(self, mkvoutpath):
+        """
+        Removes raw files from temporary folder
+
+        Parameters:
+        mkvoutpath: path of raw ripped mkv files
+
+        Return value: None
+        """
+
         try:
             shutil.rmtree(mkvoutpath)
         except UnboundLocalError:
@@ -222,12 +251,15 @@ class Ripper(object):
 
     def rip_music(self, disc, logfile):
         """
-        Rip music CD using abcde using abcde config
-        disc = disc object
-        logfile = location of logfile
+        Rips music CD using abcde with abcde config
 
-        returns True/False for success/fail
+        Parameters:
+        disc: disc object
+        logfile: location of intended logfile
+
+        return value: None
         """
+
         cmd = 'abcde -d "{0}" >> "{1}" 2>&1'.format(
             disc.devpath,
             logfile
@@ -240,22 +272,26 @@ class Ripper(object):
                 shell=True
             ).decode("utf-8")
             logging.info("abcde call successful")
-            return True
         except subprocess.CalledProcessError as ab_error:
             err = "Call to abcde failed with code: " + str(ab_error.returncode) + "(" + str(ab_error.output) + ")"
             logging.error(err)
+            logging.info("Music rip failed.  See previous errors.  Exiting.")
             # sys.exit(err)
 
-        return False
+        disc.eject()
+        utils.notify("ARM notification", "Music CD: " + disc.label + " processing complete.")
+        utils.scan_emby()
 
     def rip_data(self, disc, datapath, logfile):
         """
-        Rip data disc using cat on the command line\n
-        disc = disc object\n
-        datapath = path to copy data to\n
-        logfile = location of logfile\n
+        Rip data disc using cat on the command line
 
-        returns True/False for success/fail
+        Parameters:
+        disc: disc object
+        datapath: path to copy data to
+        logfile: location of intended logfile
+
+        Return value: None
         """
 
         if (disc.label) == "":
@@ -279,15 +315,25 @@ class Ripper(object):
                 shell=True
             ).decode("utf-8")
             logging.info("Data rip call successful")
+            utils.notify("ARM notification", "Data disc: " + disc.label + " copying complete.")
             return True
         except subprocess.CalledProcessError as dd_error:
             err = "Data rip failed with code: " + str(dd_error.returncode) + "(" + str(dd_error.output) + ")"
             logging.error(err)
+            logging.info("Data rip failed.  See previous errors.  Exiting.")
 
-        return False
+        disc.eject()
 
     def set_permissions(self, dest_dir):
-        # set file to default permissions '777'
+        """
+        Set file to default permissions '777'
+
+        Parameters:
+        dest_dir: path of directory to change permissions of
+
+        Return value: None
+        """
+
         if cfg['SET_MEDIA_PERMISSIONS']:
             perm_result = utils.set_permissions(dest_dir)
             logging.info("Permissions set successfully: " + str(perm_result))

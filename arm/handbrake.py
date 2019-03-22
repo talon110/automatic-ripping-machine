@@ -12,13 +12,16 @@ from config import cfg
 
 
 def handbrake_mainfeature(srcpath, basepath, logfile, disc):
-    """process dvd with mainfeature enabled.
-    srcpath = Path to source for HB (dvd or files)
-    basepath = Path where HB will save trancoded files
-    logfile = Logfile for HB to redirect output to
-    disc = Disc object
+    """
+    Rips DVD main feature only
 
-    Returns nothing
+    Parameters:
+    srcpath: Path to source for HB (dvd or files)
+    basepath: Path where HB will save trancoded files
+    logfile: Logfile for HB to redirect output to
+    disc: Disc object
+
+    Return value: True for successful operation, False otherwise
     """
     logging.info("Starting DVD Movie Mainfeature processing")
 
@@ -54,7 +57,8 @@ def handbrake_mainfeature(srcpath, basepath, logfile, disc):
     except subprocess.CalledProcessError as hb_error:
         err = "Call to handbrake failed with code: " + str(hb_error.returncode) + "(" + str(hb_error.output) + ")"
         logging.error(err)
-        sys.exit(err)
+#        sys.exit(err)
+        return False
 
     logging.info("Handbrake processing complete")
     logging.debug(str(disc))
@@ -65,16 +69,21 @@ def handbrake_mainfeature(srcpath, basepath, logfile, disc):
         os.rmdir(basepath)
     except OSError:
         pass
+    return True
 
 
 def handbrake_all(srcpath, basepath, logfile, disc):
-    """Process all titles on the dvd
-    srcpath = Path to source for HB (dvd or files)
-    basepath = Path where HB will save trancoded files
-    logfile = Logfile for HB to redirect output to
-    disc = Disc object
+    """
+    Processes all titles in a directory containing the same file/folder structure
+    as a blu ray or DVD
 
-    Returns nothing
+    Parameters:
+    srcpath: Path to source for HB (dvd or files)
+    basepath: Path where HB will save trancoded files
+    logfile: Logfile for HB to redirect output to
+    disc: Disc object
+
+    Returns True for successful operation, False otherwise
     """
     logging.info("Starting BluRay/DVD transcoding - All titles")
 
@@ -180,7 +189,7 @@ def handbrake_all(srcpath, basepath, logfile, disc):
                 err = "Handbrake encoding of title " + str(title) + " failed with code: " + str(hb_error.returncode) + "(" + str(hb_error.output) + ")"
                 logging.error(err)
                 disc.errors.append(str(title))
-                # return
+                return False
                 # sys.exit(err)
 
             # move file
@@ -199,16 +208,20 @@ def handbrake_all(srcpath, basepath, logfile, disc):
             os.rmdir(basepath)
         except OSError:
             pass
+    return True
 
 
 def handbrake_mkv(srcpath, basepath, logfile, disc):
-    """process all mkv files in a directory.
-    srcpath = Path to source for HB (dvd or files)
-    basepath = Path where HB will save trancoded files
-    logfile = Logfile for HB to redirect output to
-    disc = Disc object
+    """
+    Processes all mkv files in a directory
 
-    Returns nothing
+    Parameters:
+    srcpath: Path to source for HB (dvd or files)
+    basepath: Path where HB will save trancoded files
+    logfile: Logfile for HB to redirect output to
+    disc: Disc object
+
+    Return value: True for successful operation, False otherwise
     """
 
     if disc.disctype == "dvd":
@@ -247,17 +260,22 @@ def handbrake_mkv(srcpath, basepath, logfile, disc):
             err = "Handbrake encoding of file " + shlex.quote(f) + " failed with code: " + str(hb_error.returncode) + "(" + str(hb_error.output) + ")"
             logging.error(err)
             disc.errors.append(f)
+            return False
 
     logging.info("Handbrake processing complete")
     logging.debug(str(disc))
+    return True
 
 
 def get_title_length(title, srcpath):
-    """Use HandBrake to get the title length
-    title = title to scan
-    srcpath = location of the dvd or decrypted bluray
+    """
+    Use HandBrake to get the title length
 
-    returns the length of the title or -1 if the length could not be determinied
+    Parameters:
+    title: title to scan
+    srcpath: location of the dvd or decrypted bluray
+
+    Return value: duration of the title in seconds or -1 if the length could not be determinied
     """
     logging.debug("Getting length from " + srcpath + " on title: " + str(title))
 

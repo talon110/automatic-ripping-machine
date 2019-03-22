@@ -69,7 +69,7 @@ def move_files(basepath, filename, hasnicetitle, videotitle, ismainfeature=False
     logging.debug("Arguments: " + basepath + " : " + filename + " : " + str(hasnicetitle) + " : " + videotitle + " : " + str(ismainfeature))
 
     if hasnicetitle:
-        m_path = os.path.join(cfg['MEDIA_DIR'] + videotitle)
+        m_path = os.path.join(cfg['MEDIA_DIR'], videotitle)
 
         if not os.path.exists(m_path):
             logging.info("Creating base title directory: " + m_path)
@@ -112,7 +112,7 @@ def make_dir(path):
     Creates a new directory. If the directory already exists, create a directory
     including the timestamp of creation time at the end of the directory name
 
-    Input value:
+    Parameters:
     path: A string representing the path to the desired directory.
 
     Return value: Path to the output directory

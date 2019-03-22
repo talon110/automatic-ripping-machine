@@ -12,10 +12,12 @@ from config import cfg
 def makemkv(logfile, disc):
     """
     Rip Blurays with MakeMKV
-    logfile = Location of logfile to redirect MakeMKV logs to
-    disc = disc object
 
-    Returns path to ripped files.
+    Parameters:
+    logfile: location of logfile to redirect MakeMKV logs to
+    disc: disc object
+
+    Return value: path to ripped files or None if the operation fails
     """
 
     logging.info("Starting MakeMKV rip. Method is " + cfg['RIPMETHOD'])
@@ -30,19 +32,23 @@ def makemkv(logfile, disc):
         logging.error(err)
         return None
 
-    disc.eject()
-
     logging.info("Exiting MakeMKV processing with return value of: " + rawpath)
     return(rawpath)
 
 def rip_disc(disc, output_dir, logfile):
     """
     Rips disc using MakeMKV
+
+    Parameters:
+    output_dir: path to output directory
+    logfile: path to intended logfile
+
+    Return value: True on successful run or False otherwise
     """
     try:
         mdisc = get_disc_num(disc)
     except:
-        return None
+        return False
 
     if cfg['RIPMETHOD'] == "backup" and disc.disctype == "bluray":
         cmd = 'makemkvcon backup --decrypt {0} -r disc:{1} {2}>> {3}'.format(
@@ -75,12 +81,17 @@ def rip_disc(disc, output_dir, logfile):
     except subprocess.CalledProcessError as mkv_error:
         err = "Call to MakeMKV failed with code: " + str(mkv_error.returncode) + "(" + str(mkv_error.output) + ")"
         logging.error(err)
+        return False
     return True
 
 def get_disc_num(disc):
     """
-    Takes a disc object
-    Returns the MakeMKV disc number
+    Gets the disc number as determined by makemkvcon
+
+    Parameters:
+    disc: disc object
+
+    Return value: the MakeMKV disc number
     """
     logging.debug("Getting MakeMKV disc number")
     cmd = 'makemkvcon -r info disc:9999  |grep {0} |grep -oP \'(?<=:).*?(?=,)\''.format(
