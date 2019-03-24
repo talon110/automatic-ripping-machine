@@ -51,7 +51,7 @@ def rip_disc(disc, output_dir, logfile):
         return False
 
     if cfg['RIPMETHOD'] == "backup" and disc.disctype == "bluray":
-        cmd = 'makemkvcon backup --decrypt {0} -r disc:{1} {2}>> {3}'.format(
+        cmd = 'makemkvcon backup --decrypt {0} -r --noscan disc:{1} {2}>> {3}'.format(
             cfg['MKV_ARGS'],
             mdisc.strip(),
             shlex.quote(output_dir),
@@ -60,7 +60,7 @@ def rip_disc(disc, output_dir, logfile):
         logging.info("Backup disc")
         logging.debug("Backing up with the following command: " + cmd)
     elif cfg['RIPMETHOD'] == "mkv" or disc.disctype == "dvd":
-        cmd = 'makemkvcon mkv {0} -r dev:{1} all {2} --minlength={3}>> {4}'.format(
+        cmd = 'makemkvcon mkv {0} -r --noscan dev:{1} all {2} --minlength={3}>> {4}'.format(
             cfg['MKV_ARGS'],
             disc.devpath,
             shlex.quote(output_dir),
@@ -94,7 +94,7 @@ def get_disc_num(disc):
     Return value: the MakeMKV disc number
     """
     logging.debug("Getting MakeMKV disc number")
-    cmd = 'makemkvcon -r info disc:9999  |grep {0} |grep -oP \'(?<=:).*?(?=,)\''.format(
+    cmd = 'makemkvcon -r --noscan info disc:9999  |grep {0} |grep -oP \'(?<=:).*?(?=,)\''.format(
                 disc.devpath
     )
 

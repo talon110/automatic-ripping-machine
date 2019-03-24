@@ -1,10 +1,11 @@
 import pyudev
 import os
 import logging
-
+import fcntl
 
 class Disc(object):
-    """A disc class
+    """
+    A class representing an optical disc
 
 
     Attributes:
@@ -16,12 +17,25 @@ class Disc(object):
         hasnicetitle
         label
         disctype
-        ejected
         errors
+
+    Methods:
+        __init__(self, devpath)
+        __str__(self)
+        parse_udev(self)
+        eject(self)
+        drive_status(self)
     """
 
     def __init__(self, devpath):
-        """Return a disc object"""
+        """
+        Constructor; returns a disc object
+
+        Parameters:
+            devpath: path to the disc
+
+        Return value: None
+        """
         self.devpath = devpath
         self.mountpoint = "/mnt" + devpath
         self.videotitle = ""
@@ -30,15 +44,35 @@ class Disc(object):
         self.hasnicetitle = False
         self.label = ""
         self.disctype = ""
-        self.ejected = False
         self.errors = []
-
         self.parse_udev()
 
-    def parse_udev(self):
-        """Parse udev for properties of current disc"""
+    def __str__(self):
+        """
+        Returns a string representing the disc object
 
-        # print("Entering disc")
+        Parameters:
+        None
+
+        Return value: None
+        """
+
+        s = self.__class__.__name__ + ": "
+        for attr, value in self.__dict__.items():
+            s = s + "(" + str(attr) + "=" + str(value) + ") "
+
+        return s
+
+    def parse_udev(self):
+        """
+        Parse udev for properties of current disc
+
+        Parameters:
+        None
+
+        Return Value: None
+        """
+
         logging.debug("**** Logging udev attributes ****")
         context = pyudev.Context()
         device = pyudev.Devices.from_device_file(context, self.devpath)
@@ -60,19 +94,40 @@ class Disc(object):
                 pass
         logging.debug("**** End udev attributes ****")
 
-    def __str__(self):
-        """Returns a string of the object"""
-
-        s = self.__class__.__name__ + ": "
-        for attr, value in self.__dict__.items():
-            s = s + "(" + str(attr) + "=" + str(value) + ") "
-
-        return s
-
     def eject(self):
-        """Eject disc if it hasn't previously been ejected"""
+        """
+        Ejects disc if tray isn't already open
 
-        # print("Value is " + str(self.ejected))
-        if not self.ejected:
-            os.system("eject " + self.devpath)
-            self.ejected = True
+        Parameters:
+        None
+
+        Return value: None
+        """
+
+        cmd = "eject " + self.devpath
+        if self.drive_status() != 2:
+            logging.debug("Ejecting using cmd: " + cmd)
+            os.system(cmd)
+        else:
+            logging.debug("Tray for drive " + self.devpath + " is already open. Skipping eject.")
+
+    def drive_status(self):
+        """
+        Returns the optical drive's status from ioctl
+
+        Statuses:
+        1 = no disk in tray
+        2 = tray open
+        3 = reading tray
+        4 = disk in tray
+
+        Parameters:
+        devpath: the path to the device
+
+        Return value: None
+        """
+
+        fd = os.open(self.devpath, os.O_RDONLY | os.O_NONBLOCK)
+        rv = fcntl.ioctl(fd, 0x5326)
+        os.close(fd)
+        return rv
