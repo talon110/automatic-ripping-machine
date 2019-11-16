@@ -52,7 +52,7 @@ def identify(disc, logfile):
 
         logging.info("Disc identified as video")
 	
-        if cfg["VIDEO_TITLE"] != "" && cfg["VIDEO_YEAR"] != "":
+        if cfg["VIDEO_TITLE"] != "" and cfg["VIDEO_YEAR"] != "":
             disc.videotitle, disc.videoyear = cfg["VIDEO_TITLE"], cfg["VIDEO_YEAR"]
 
             logging.info("Disc title: " + str(disc.videotitle) + " : " + str(disc.videoyear) + " : " + str(disc.videotype))
