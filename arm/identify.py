@@ -51,8 +51,14 @@ def identify(disc, logfile):
     if disc.disctype in ["dvd", "bluray"]:
 
         logging.info("Disc identified as video")
+	
+        if cfg["VIDEO_TITLE"] != "" && cfg["VIDEO_YEAR"] != "":
+            disc.videotitle, disc.videoyear = cfg["VIDEO_TITLE"], cfg["VIDEO_YEAR"]
 
-        if cfg["GET_VIDEO_TITLE"]:
+            logging.info("Disc title: " + str(disc.videotitle) + " : " + str(disc.videoyear) + " : " + str(disc.videotype))
+            logging.debug("Manual identification set in config file: " + str(disc))
+		
+        elif cfg["GET_VIDEO_TITLE"]:
 
             logging.info("Getting movie title...")
             disc.videotitle, disc.videoyear = getmovietitle.main(disc)
