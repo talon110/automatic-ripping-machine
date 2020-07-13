@@ -34,7 +34,7 @@ class Ripper(object):
         self.disc_notify(disc)
 
         if disc.disctype=="music":
-            rip_music(disc, logfile)
+            self.rip_music(disc, logfile)
         elif disc.disctype in ["bluray", "dvd", "data"]:
             dest_dir = self.create_output_dirs(disc)
             logging.info("Processing files to: " + dest_dir)
