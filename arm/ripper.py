@@ -259,8 +259,6 @@ class Ripper(object):
         return value: None
         """
 
-        subprocess.check_output('abcde -v',shell=True).decode("utf-8")
-
         cmd = 'abcde -d "{0}" >> "{1}" 2>&1'.format(
             disc.devpath,
             logfile
