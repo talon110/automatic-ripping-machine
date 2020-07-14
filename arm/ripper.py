@@ -259,7 +259,7 @@ class Ripper(object):
         return value: None
         """
 
-        cmd = 'abcde -d "{0}" >> "{1}" 2>&1'.format(
+        cmd = 'abcde -v -d "{0}" >> "{1}" 2>&1'.format(
             disc.devpath,
             logfile
         )
