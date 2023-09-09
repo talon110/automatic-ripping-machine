@@ -112,3 +112,4 @@ if __name__ == "__main__":
     except Exception:
         logging.exception("A fatal error has occured and ARM is exiting.  See traceback below for details.")
         utils.notify("ARM notification", "ARM encountered a fatal error processing " + str(disc.videotitle) + ". Check the logs for more details")
+        disc.eject()
