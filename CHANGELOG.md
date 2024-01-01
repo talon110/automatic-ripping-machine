@@ -1,5 +1,10 @@
 # Changelog
 
+## v3.0.16
+ - Added functionality in main.py to immediately eject disc if hitting a fatal error
+
+## v3.0.1
+
 ## v2.0.1
  - Fixed crash inserting bluray when bdmt_eng.xml file is not present
  - Fixed error when deleting non-existent raw files
