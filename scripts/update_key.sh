@@ -28,6 +28,7 @@ fi
 if [ ! -d "$MAKEMKV_DIR" ]; then
     mkdir -p "$MAKEMKV_DIR"
     #chown arm:arm "$MAKEMKV_DIR"
+    echo "Contents of MakeMKV_DIR are: $(ls -l $MAKEMKV_DIR)"
 fi
 
 # if file doesn't exist OR grep doesn't find key string in settings
@@ -55,4 +56,3 @@ else
 fi
 
 #chown arm:arm "$SETTINGS_FILE"
-echo "$(ls -l $MAKEMKV_DIR)
