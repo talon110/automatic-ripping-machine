@@ -27,7 +27,7 @@ fi
 # create .MakeMKV dir if it doesn't already exist
 if [ ! -d "$MAKEMKV_DIR" ]; then
     mkdir -p "$MAKEMKV_DIR"
-    chown arm:arm "$MAKEMKV_DIR"
+    #chown arm:arm "$MAKEMKV_DIR"
 fi
 
 # if file doesn't exist OR grep doesn't find key string in settings
@@ -54,4 +54,5 @@ else
     fi
 fi
 
-chown arm:arm "$SETTINGS_FILE"
+#chown arm:arm "$SETTINGS_FILE"
+echo "$(ls -l $MAKEMKV_DIR)
