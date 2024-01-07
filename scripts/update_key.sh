@@ -6,8 +6,14 @@
 # beta key.
 # Link: https://forum.makemkv.com/forum/viewtopic.php?p=119221#p119221
 
+# Define variables
 makemkv_serial_url="https://forum.makemkv.com/forum/viewtopic.php?f=5&t=1053"
 MAKEMKV_PERMA_KEY=
+MAKEMKV_DIR="/root/.MakeMKV"
+SETTINGS_FILE="$MAKEMKV_DIR/settings.conf"
+
+user=$(whoami)
+echo "Running script as user: $user"
 
 # save passed MAKEMKV_PERMA_KEY or scrape this month's beta key
 if [ -n "$1" ]; then
@@ -19,14 +25,12 @@ else
 fi
 
 # create .MakeMKV dir if it doesn't already exist
-MAKEMKV_DIR="/root/.MakeMKV"
 if [ ! -d "$MAKEMKV_DIR" ]; then
     mkdir -p "$MAKEMKV_DIR"
     chown arm:arm "$MAKEMKV_DIR"
 fi
 
 # if file doesn't exist OR grep doesn't find key string in settings
-SETTINGS_FILE="$MAKEMKV_DIR/settings.conf"
 if [[ ! -f "$SETTINGS_FILE" ]] || ! grep -q "app_Key" "$SETTINGS_FILE"; then
     echo "Either $SETTINGS_FILE doesn't exist, or app_Key is not inside it"
     # if run w/arg
@@ -45,8 +49,9 @@ else
         sed -i "s|app_Key = \"T-.*\"|app_Key = \"$MAKEMKV_PERMA_KEY\"|" "$SETTINGS_FILE"
     else
         # sed replace key is settings w/beta key
+        echo "Using beta key $makemkv_serial"
         sed -i "s|app_Key = \"T-.*\"|app_Key = \"$makemkv_serial\"|" "$SETTINGS_FILE"
     fi
 fi
 
-#chown arm:arm "/home/arm/.MakeMKV/settings.conf"
+chown arm:arm "$SETTINGS_FILE"
