@@ -19,7 +19,7 @@ else
 fi
 
 # create .MakeMKV dir if it doesn't already exist
-MAKEMKV_DIR="/root/.MakeMKV/"
+MAKEMKV_DIR="/root/.MakeMKV"
 if [ ! -d "$MAKEMKV_DIR" ]; then
     mkdir -p "$MAKEMKV_DIR"
     chown arm:arm "$MAKEMKV_DIR"
