@@ -20,6 +20,7 @@ def makemkv(logfile, disc):
     Return value: path to ripped files or None if the operation fails
     """
 
+    prep_mkv(logfile)
     logging.info("Starting MakeMKV rip. Method is " + cfg['RIPMETHOD'])
 
     rawpath = utils.make_dir(os.path.join(cfg['RAWPATH'], disc.videotitle + " (" + disc.videoyear + ")"))
@@ -34,6 +35,30 @@ def makemkv(logfile, disc):
 
     logging.info("Exiting MakeMKV processing with return value of: " + rawpath)
     return(rawpath)
+
+def prep_mkv(logfile):
+    """Make sure the MakeMKV key is up-to-date
+
+    Parameters:
+        logfile: Location of logfile to redirect MakeMKV logs to
+    Raises:
+        RuntimeError
+    """
+    try:
+        logging.info("Updating MakeMKV key...")
+        update_cmd = "/bin/bash /opt/arm/scripts/update_key.sh"
+
+        # if MAKEMKV_PERMA_KEY is populated
+        if cfg['MAKEMKV_PERMA_KEY'] is not None and cfg['MAKEMKV_PERMA_KEY'] != "":
+            logging.debug("MAKEMKV_PERMA_KEY populated, using that...")
+            # add MAKEMKV_PERMA_KEY as an argument to the command
+            update_cmd = f"{update_cmd} {cfg['MAKEMKV_PERMA_KEY']}"
+
+        subprocess.run(f"{update_cmd} >> {logfile}", capture_output=True, shell=True, check=True)
+    except subprocess.CalledProcessError as update_err:
+        err = f"Error updating MakeMKV key, return code: {update_err.returncode}"
+        logging.error(err)
+        raise RuntimeError(err) from update_err
 
 def rip_disc(disc, output_dir, logfile):
     """
