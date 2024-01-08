@@ -8,52 +8,37 @@
 
 # Define variables
 makemkv_serial_url="https://forum.makemkv.com/forum/viewtopic.php?f=5&t=1053"
-MAKEMKV_PERMA_KEY=
+MAKEMKV_KEY=
 MAKEMKV_DIR="/root/.MakeMKV"
 SETTINGS_FILE="$MAKEMKV_DIR/settings.conf"
 
-user=$(whoami)
-echo "Running script as user: $user"
-
-# save passed MAKEMKV_PERMA_KEY or scrape this month's beta key
+# save MAKEMKV_KEY passed as argument, or scrape this month's beta key
 if [ -n "$1" ]; then
-    echo "MAKEMKV_PERMA_KEY passed as arg"
-    MAKEMKV_PERMA_KEY=$1
+    echo "MAKEMKV_KEY passed as argument"
+    MAKEMKV_KEY=$1
 else
-    makemkv_serial=$(curl -fsSL "$makemkv_serial_url" | grep -oP 'T-[\w\d@]{66}')
-    echo "MakeMKV beta key for this month: $makemkv_serial"
+    MAKEMKV_KEY=$(curl -fsSL "$makemkv_serial_url" | grep -oP 'T-[\w\d@]{66}')
+    echo "MakeMKV beta key for this month: $MAKEMKV_KEY"
 fi
 
 # create .MakeMKV dir if it doesn't already exist
 if [ ! -d "$MAKEMKV_DIR" ]; then
     mkdir -p "$MAKEMKV_DIR"
-    #chown arm:arm "$MAKEMKV_DIR"
 fi
 
-echo "Contents of MakeMKV_DIR are: $(ls -l $MAKEMKV_DIR)"
-
-# if file doesn't exist OR grep doesn't find key string in settings
+# if file doesn't exist OR grep doesn't find app_Key entry in settings
 if [[ ! -f "$SETTINGS_FILE" ]] || ! grep -q "app_Key" "$SETTINGS_FILE"; then
     echo "Either $SETTINGS_FILE doesn't exist, or app_Key is not inside it"
-    # if run w/arg
-    if [ -n "$MAKEMKV_PERMA_KEY" ]; then
-        # append permakey string to settings
-        echo "app_Key = \"$MAKEMKV_PERMA_KEY\"" >> "$SETTINGS_FILE"
-    else
-        # append beta key to settings
-        echo "app_Key = \"$makemkv_serial\"" >> "$SETTINGS_FILE"
-    fi
-else
-    echo "$SETTINGS_FILE exists, updating value of app_Key"
-    # if run w/arg
-    if [ -n "$MAKEMKV_PERMA_KEY" ]; then
-        # sed replace key in settings w/permakey
-        sed -i "s|app_Key = \"T-.*\"|app_Key = \"$MAKEMKV_PERMA_KEY\"|" "$SETTINGS_FILE"
-    else
-        # sed replace key is settings w/beta key
-        echo "Using beta key $makemkv_serial"
-        sed -i "s|app_Key = \"T-.*\"|app_Key = \"$makemkv_serial\"|" "$SETTINGS_FILE"
-    fi
+    echo "Appending app_Key: $MAKEMKV_KEY to settings file."
+    echo "app_Key = \"$MAKEMKV_KEY\"" >> "$SETTINGS_FILE"
 fi
 
-#chown arm:arm "$SETTINGS_FILE"
+CURRENT_KEY=$(grep -oh \"T-.*\" $SETTINGS_FILE)
+if [[ CURRENT_KEY != MAKEMKV_KEY ]]; then
+    echo "$SETTINGS_FILE exists and app_Key is currently: $CURRENT_KEY. Updating app_Key value."
+    echo "Replacing beta key in settings file: $CURRENT_KEY with: $MAKEMKV_KEY"
+    # avoid using sed -i to avoid filesystem issues when running inside a container
+    sed "s|app_Key = \"T-.*\"|app_Key = \"$MAKEMKV_KEY\"|" "$SETTINGS_FILE" > /tmp/settings.conf && cat /tmp/settings.conf > $SETTINGS_FILE
+else
+    echo "app_Key already set. Ending script."
+fi
