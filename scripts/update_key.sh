@@ -33,8 +33,8 @@ if [[ ! -f "$SETTINGS_FILE" ]] || ! grep -q "app_Key" "$SETTINGS_FILE"; then
     echo "app_Key = \"$MAKEMKV_KEY\"" >> "$SETTINGS_FILE"
 fi
 
-CURRENT_KEY=$(grep -oh \"T-.*\" $SETTINGS_FILE)
-if [[ CURRENT_KEY != MAKEMKV_KEY ]]; then
+CURRENT_KEY=$(grep -oh \T-.*[^\"] $SETTINGS_FILE)
+if [[ $CURRENT_KEY != $MAKEMKV_KEY ]]; then
     echo "$SETTINGS_FILE exists and app_Key is currently: $CURRENT_KEY. Updating app_Key value."
     echo "Replacing beta key in settings file: $CURRENT_KEY with: $MAKEMKV_KEY"
     # avoid using sed -i to avoid filesystem issues when running inside a container
