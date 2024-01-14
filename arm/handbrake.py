@@ -106,6 +106,7 @@ def handbrake_all(srcpath, basepath, logfile, disc):
         err = "Call to handbrake failed with code: " + str(hb_error.returncode) + "(" + str(hb_error.output) + ")"
         logging.error(err)
         sys.exit(err)
+        raise subprocess.CalledProcessError(hb_error.returncode, cmd)
 
     titles = 0
     mt_track = 0
