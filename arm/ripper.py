@@ -102,7 +102,7 @@ class Ripper(object):
         mkvoutpath = self.makemkv_rip(disc, logfile)
         disc.eject()
         if cfg['RIPMETHOD'] == "mkv" and cfg['SKIP_TRANSCODE']:
-            logging.info("SKIP_TRANSCODE is true.")
+            logging.info("RIPMETHOD is " + cfg['RIPMETHOD'] + "; SKIP_TRANSCODE is " + cfg['SKIP_TRANSCODE'])
             self.move_raw(mkvoutpath, dest_dir)
             self.set_permissions(dest_dir)
         elif disc.disctype == "dvd":

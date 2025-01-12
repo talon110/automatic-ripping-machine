@@ -1,5 +1,8 @@
 # Changelog
 
+## v3.0.17
+ - Fixed error in handbrake_all() resulting in no discovered tracks
+
 ## v3.0.16
  - Added functionality in main.py to immediately eject disc if hitting a fatal error
 

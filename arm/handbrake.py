@@ -115,14 +115,15 @@ def handbrake_all(srcpath, basepath, logfile, disc):
         # get number of titles on disc
         # pattern = re.compile(r'\bscan\:.*\btitle\(s\)')
 
-        if disc.disctype == "bluray":
-            result = re.search('scan: BD has (.*) title\(s\)', line)
-        else:
-            result = re.search('scan: DVD has (.*) title\(s\)', line)
+        result = re.search(r'scan: (BD|DVD) has (\d{1,3}) title\(s\)', line)
+
+        # if disc.disctype == "bluray":
+        #     result = re.search('scan: BD has (.*) title(s)', line)
+        # else:
+        #     result = re.search('scan: DVD has (.*) title(s)', line)
 
         if result:
-            titles = result.group(1)
-            titles = titles.strip()
+            titles = result.group(2).strip()
             logging.debug("Line found is: " + line)
             logging.info("Found " + titles + " titles")
 
